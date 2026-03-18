@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>בנא משקאות - מערכת ניהול</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+<style>
+  :root { 
+    --brand-black: #1a1a1a; 
+    --brand-red: #cc0000; 
+    --brand-red-hover: #a30000; 
+    --bg-color: #f4f4f4; 
+    --card-bg: #ffffff; 
+    --text-main: #333333; 
+    --border-color: #e0e0e0; 
+    --danger: #dc3545; 
+    --success: #28a745; 
+  }
+  
+  * { box-sizing: border-box; font-family: 'Heebo', sans-serif !important; }
+  body { background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; }
+  
+  /* Header & Nav */
+  header { background-color: var(--brand-black); color: white; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; height: 70px; }
+  
+  .header-right { flex: 1; display: flex; align-items: center; justify-content: flex-start; }
+  .header-center { flex: 2; text-align: center; }
+  .header-left { flex: 1; display: flex; align-items: center; justify-content: flex-end; }
+
+  header h1 { margin: 0; font-size: 1.8rem; color: var(--brand-red); font-weight: 800; white-space: nowrap; }
+  
+  .hamburger { display: none; font-size: 2rem; cursor: pointer; color: white; user-select: none; }
+  
+  nav { display: flex; gap: 15px; }
+  nav button { background: none; border: none; color: white; font-size: 1.05rem; cursor: pointer; padding: 22px 5px; border-bottom: 3px solid transparent; font-weight: 500; transition: color 0.2s; }
+  nav button:hover, nav button.active { color: var(--brand-red); border-bottom: 3px solid var(--brand-red); }
+  
+  /* תפריט מובייל - המבורגר מימין */
+  @media (max-width: 900px) {
+    .hamburger { display: block; }
+    nav { display: none; position: absolute; top: 70px; right: 0; width: 250px; background-color: var(--brand-black); flex-direction: column; padding: 10px 0; box-shadow: -2px 5px 10px rgba(0,0,0,0.3); gap: 0; }
+    nav.show-mobile { display: flex; }
+    nav button { text-align: right; padding: 15px 20px; border-bottom: 1px solid #333; width: 100%; border-right: 4px solid transparent; }
+    nav button:hover, nav button.active { border-bottom: 1px solid #333; color: var(--brand-red); background: #111; border-right: 4px solid var(--brand-red); }
+  }
+
+  .hidden { display: none !important; }
+  .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
+  .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+  .card-title { margin-top: 0; font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; border-bottom: 2px solid var(--brand-red); display: inline-block; padding-bottom: 5px; }
+  
+  input, select, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; }
+  input[type="checkbox"] { width: auto; margin-left: 5px; transform: scale(1.2); }
+  .btn-primary { background-color: var(--brand-red); color: white; border: none; padding: 10px 15px; font-weight: 800; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+  .btn-primary:hover { background-color: var(--brand-red-hover); }
+  .btn-small { background-color: var(--brand-black); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;}
+  .btn-danger { background-color: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
+  
+  .list-item { border: 1px solid var(--border-color); padding: 15px; border-radius: 4px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; background: #fafafa; flex-wrap: wrap; gap: 10px;}
+  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+  .modal-content { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-actions button { flex: 1; }
+
+  .tree-ul { list-style-type: none; padding-right: 20px; margin: 5px 0; border-right: 1px dashed var(--border-color); }
+</style>
+</head>
+<body>
+
+  <div id="login-section" class="container" style="max-width: 400px; margin-top: 100px;">
+    <div class="card" style="text-align: center;">
+      <h2 class="card-title">בנא משקאות - תפעול</h2>
+      <input type="text" id="login-username" placeholder="שם משתמש (admin / danny)">
+      <input type="password" id="login-password" placeholder="סיסמה (123)">
+      <button class="btn-primary" style="width: 100%;" onclick="login()">התחבר למערכת</button>
+      <p id="login-error" style="color: red; display: none; font-size: 0.9rem; margin-top: 10px;">פרטים שגויים.</p>
+    </div>
+  </div>
+
+  <header id="main-header" class="hidden">
+    <div class="header-right">
+      <div class="hamburger" onclick="toggleMobileMenu()">☰</div>
+    </div>
+    
+    <div class="header-center">
+      <h1>בנא משקאות</h1>
+    </div>
+    
+    <div class="header-left">
+      <nav id="main-nav">
+        <button onclick="showTab('dashboard')" id="tab-dashboard" class="active">ראשי</button>
+        <button onclick="showTab('tasks')" id="tab-tasks">משימות</button>
+        <button onclick="showTab('knowledge')" id="tab-knowledge">מרכז ידע</button>
+        <button onclick="showTab('test-review')" id="tab-test-review" class="hidden">בקרת מבחנים</button>
+        <button onclick="showTab('users')" id="tab-users" class="hidden">ניהול עובדים</button>
+        <button onclick="showTab('catalog')" id="tab-catalog" class="hidden">קטגוריות ופריטים</button>
+        <button onclick="logout()">התנתק</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container hidden" id="app-content">
+    
+    <div id="dashboard-section"><div class="card"><h2 class="card-title">דשבורד ראשי</h2><p>שלום, <span id="user-greeting"></span>!</p></div></div>
+
+    <div id="tasks-section" class="hidden">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+          <h2 class="card-title" style="margin: 0;">ניהול משימות</h2>
+          <button id="btn-create-task" class="btn-primary hidden" onclick="openTaskModal()">+ משימה חדשה</button>
+        </div>
+        <div id="tasks-container"></div>
+      </div>
+    </div>
+
+    <div id="users-section" class="hidden">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+          <h2 class="card-title" style="margin: 0;">ניהול עובדים</h2>
+          <button class="btn-primary" onclick="openUserModal(null)">+ הוסף עובד</button>
+        </div>
+        <div id="tree-container"></div>
+      </div>
+    </div>
+
+    <div id="catalog-section" class="hidden">
+      <div class="card">
+        <h2 class="card-title">ניהול קטגוריות</h2>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+          <input type="text" id="new-cat-name" placeholder="שם קטגוריה">
+          <button class="btn-small" onclick="addCategory()">הוסף ידנית</button>
+        </div>
+        <div style="margin-bottom: 20px; font-size: 0.9rem; border: 1px dashed #ccc; padding: 10px;">
+          <strong>העלאת קטגוריות מאקסל: </strong> עמודה A = שם קטגוריה
+          <input type="file" accept=".xlsx, .xls" style="margin-top: 10px;" onchange="handleExcelUpload(event, 'categories')">
+        </div>
+        <div id="cat-list"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">ניהול פריטים</h2>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+          <input type="text" id="new-item-barcode" placeholder="ברקוד">
+          <input type="text" id="new-item-name" placeholder="שם פריט">
+          <button class="btn-small" onclick="addItem()">הוסף ידנית</button>
+        </div>
+        <div style="margin-bottom: 20px; font-size: 0.9rem; border: 1px dashed #ccc; padding: 10px;">
+          <strong>העלאת פריטים מאקסל: </strong> עמודה A = ברקוד | עמודה B = שם פריט
+          <input type="file" accept=".xlsx, .xls" style="margin-top: 10px;" onchange="handleExcelUpload(event, 'items')">
+        </div>
+        <div id="items-list"></div>
+      </div>
+    </div>
+
+    <div id="knowledge-section" class="hidden">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+          <h2 class="card-title" style="margin: 0;">ניהול ידע</h2>
+          <button id="btn-create-knowledge" class="btn-primary hidden" onclick="openKnowledgeModal()">+ יצירת ידע חדש</button>
+        </div>
+        <div id="knowledge-list-container"></div>
+      </div>
+    </div>
+
+    <div id="test-review-section" class="hidden">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+          <h2 class="card-title" style="margin: 0;">בקרת ועריכת מבחנים</h2>
+          <button class="btn-primary" onclick="openKnowledgeModal(null, true)">+ יצירת מבחן חדש</button>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+          <button class="btn-small" onclick="renderTestReview('logs')">ציוני עובדים</button>
+          <button class="btn-small" onclick="renderTestReview('edit')">עריכת מבחנים קיימים</button>
+        </div>
+        <div id="test-review-container"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="knowledge-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="border-bottom: 2px solid var(--brand-red); padding-bottom: 10px;">יצירת/עריכת ידע ומבחן</h3>
+      <input type="hidden" id="k-id">
+      <label>כותרת (למשל: מבחן נהלי קופה):</label><input type="text" id="k-title">
+      
+      <label>סוג שיוך (חובה):</label>
+      <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+        <label><input type="radio" name="k-target-type" value="category" onchange="updateKnowledgeDropdown()" checked> קטגוריה</label>
+        <label><input type="radio" name="k-target-type" value="item" onchange="updateKnowledgeDropdown()"> פריט ספציפי</label>
+      </div>
+      
+      <select id="k-target-id"></select>
+      
+      <button class="btn-small" onclick="addQuizQuestion()">+ הוסף שאלת מבחן</button>
+      <div id="quiz-blocks-container" style="margin-top: 15px;"></div>
+
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="saveKnowledge()">שמור נתונים</button>
+        <button class="btn-small" onclick="closeModal('knowledge-modal')">ביטול</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="task-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="border-bottom: 2px solid var(--brand-red); padding-bottom: 10px;">הקצאת משימה</h3>
+      <label>כותרת המשימה:</label>
+      <input type="text" id="task-title">
+      
+      <label>בחר עובדים לביצוע:</label>
+      <div style="margin-bottom: 10px;">
+        <button class="btn-small" onclick="toggleAssignees(true)">בחר הכל</button>
+        <button class="btn-small" onclick="toggleAssignees(false)">נקה בחירה</button>
+      </div>
+      <div id="assignees-container" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px; margin-bottom: 15px;"></div>
+
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="saveTask()">שלח משימה</button>
+        <button class="btn-small" onclick="closeModal('task-modal')">ביטול</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="user-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="border-bottom: 2px solid var(--brand-red); padding-bottom: 10px;">עריכת עובד</h3>
+      <input type="hidden" id="u-id">
+      <input type="text" id="u-name" placeholder="שם מלא">
+      <input type="text" id="u-username" placeholder="שם משתמש להתחברות">
+      <input type="text" id="u-password" placeholder="סיסמה">
+      <select id="u-role">
+        <option value="employee">עובד</option>
+        <option value="manager">מנהל</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="saveUser()">שמור עובד</button>
+        <button class="btn-small" onclick="closeModal('user-modal')">ביטול</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // --- מסד נתונים וירטואלי ---
+  let usersData = [
+    { id: 1, username: 'admin', password: '123', fullName: 'תומר (מנכ"ל)', role: 'admin', managerId: null },
+    { id: 2, username: 'danny', password: '123', fullName: 'דני (מנהל)', role: 'manager', managerId: 1 },
+    { id: 3, username: 'yossi', password: '123', fullName: 'יוסי (עובד)', role: 'employee', managerId: 2 },
+    { id: 4, username: 'ron', password: '123', fullName: 'רון (עובד)', role: 'employee', managerId: 2 }
+  ];
+
+  let categoriesData = [{ id: 1, name: "קטגוריית וודקה" }, { id: 2, name: "יינות" }];
+  let itemsData = [{ id: 1, barcode: "729000123", name: "יין ירושלים ק.ס" }];
+  let knowledgeData = []; 
+  let tasksData = []; 
+  let testLogsData = []; 
+
+  let currentUser = null;
+  let tempQuiz = [];
+
+  // --- כללי ומובייל ---
+  function toggleMobileMenu() {
+    document.getElementById('main-nav').classList.toggle('show-mobile');
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+  }
+
+  function login() {
+    const user = document.getElementById('login-username').value;
+    const pass = document.getElementById('login-password').value;
+    const foundUser = usersData.find(u => u.username === user && u.password === pass);
+    
+    if (foundUser) {
+      currentUser = foundUser;
+      document.getElementById('user-greeting').innerText = currentUser.fullName;
+      document.getElementById('login-section').classList.add('hidden');
+      document.getElementById('main-header').classList.remove('hidden');
+      document.getElementById('app-content').classList.remove('hidden');
+      
+      const isManager = currentUser.role === 'admin' || currentUser.role === 'manager';
+      document.getElementById('tab-users').classList.toggle('hidden', !isManager);
+      document.getElementById('tab-test-review').classList.toggle('hidden', !isManager);
+      document.getElementById('btn-create-knowledge').classList.toggle('hidden', !isManager);
+      document.getElementById('btn-create-task').classList.toggle('hidden', !isManager);
+      document.getElementById('tab-catalog').classList.toggle('hidden', currentUser.role !== 'admin');
+
+      showTab('dashboard');
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+
+  function logout() {
+    currentUser = null;
+    document.getElementById('login-section').classList.remove('hidden');
+    document.getElementById('main-header').classList.add('hidden');
+    document.getElementById('app-content').classList.add('hidden');
+  }
+
+  function showTab(tabName) {
+    ['dashboard', 'tasks', 'users', 'catalog', 'knowledge', 'test-review'].forEach(sec => 
+      document.getElementById(sec + '-section').classList.add('hidden')
+    );
+    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('main-nav').classList.remove('show-mobile'); 
+    
+    document.getElementById(tabName + '-section').classList.remove('hidden');
+    document.getElementById('tab-' + tabName).classList.add('active');
+
+    if(tabName === 'catalog') renderCatalog();
+    if(tabName === 'users') renderUsers();
+    if(tabName === 'tasks') renderTasks();
+    if(tabName === 'knowledge') renderKnowledgeList();
+  }
+
+  // --- קטלוג: קטגוריות, פריטים ו-SheetJS ---
+  function renderCatalog() {
+    const catList = document.getElementById('cat-list');
+    catList.innerHTML = categoriesData.map(c => `<div class="list-item">${c.name} <button class="btn-danger" onclick="deleteCat(${c.id})">מחק</button></div>`).join('');
+    
+    const itemList = document.getElementById('items-list');
+    itemList.innerHTML = itemsData.map(i => `<div class="list-item">${i.barcode} | ${i.name} <button class="btn-danger" onclick="deleteItem(${i.id})">מחק</button></div>`).join('');
+  }
+
+  function addCategory() {
+    const name = document.getElementById('new-cat-name').value;
+    if(name) { categoriesData.push({ id: Date.now(), name }); renderCatalog(); }
+  }
+  function deleteCat(id) { categoriesData = categoriesData.filter(c => c.id !== id); renderCatalog(); }
+
+  function addItem() {
+    const barcode = document.getElementById('new-item-barcode').value;
+    const name = document.getElementById('new-item-name').value;
+    if(barcode && name) { itemsData.push({ id: Date.now(), barcode, name }); renderCatalog(); }
+  }
+  function deleteItem(id) { itemsData = itemsData.filter(i => i.id !== id); renderCatalog(); }
+
+  function handleExcelUpload(e, type) {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const data = new Uint8Array(evt.target.result);
+      const workbook = XLSX.read(data, {type: 'array'});
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+      
+      json.forEach((row, index) => {
+        if(index === 0 && isNaN(row[0])) return; 
+        if(row.length > 0) {
+          if(type === 'categories' && row[0]) {
+            categoriesData.push({ id: Date.now() + Math.random(), name: row[0].toString() });
+          } else if(type === 'items' && row[0] && row[1]) {
+            itemsData.push({ id: Date.now() + Math.random(), barcode: row[0].toString(), name: row[1].toString() });
+          }
+        }
+      });
+      alert('הנתונים נטענו בהצלחה!');
+      renderCatalog();
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // --- ידע ומבחנים ---
+  function openKnowledgeModal(existingId = null, autoAddQuiz = false) {
+    const modal = document.getElementById('knowledge-modal');
+    if(existingId) {
+      const k = knowledgeData.find(x => x.id === existingId);
+      document.getElementById('k-id').value = k.id;
+      document.getElementById('k-title').value = k.title;
+      document.querySelector(`input[name="k-target-type"][value="${k.targetType}"]`).checked = true;
+      tempQuiz = JSON.parse(JSON.stringify(k.quiz));
+    } else {
+      document.getElementById('k-id').value = '';
+      document.getElementById('k-title').value = '';
+      tempQuiz = [];
+      if(autoAddQuiz) {
+        tempQuiz.push({ id: Date.now(), q: '', correct: '', weight: 100 });
+      }
+    }
+    updateKnowledgeDropdown();
+    renderQuizBlocks();
+    modal.classList.remove('hidden');
+  }
+
+  function updateKnowledgeDropdown() {
+    const type = document.querySelector('input[name="k-target-type"]:checked').value;
+    const select = document.getElementById('k-target-id');
+    select.innerHTML = '';
+    const source = type === 'category' ? categoriesData : itemsData;
+    source.forEach(item => {
+      const label = type === 'category' ? item.name : `${item.barcode} - ${item.name}`;
+      select.innerHTML += `<option value="${item.id}">${label}</option>`;
+    });
+  }
+
+  function addQuizQuestion() {
+    tempQuiz.push({ id: Date.now(), q: '', correct: '', weight: 0 });
+    recalcWeights();
+    renderQuizBlocks();
+  }
+
+  function recalcWeights() {
+    if(tempQuiz.length === 0) return;
+    let base = Math.floor(100 / tempQuiz.length);
+    let rem = 100 % tempQuiz.length;
+    tempQuiz.forEach((q, i) => q.weight = base + (i === 0 ? rem : 0));
+  }
+
+  function renderQuizBlocks() {
+    const cont = document.getElementById('quiz-blocks-container');
+    cont.innerHTML = tempQuiz.map((q, index) => `
+      <div style="border:1px solid #ccc; padding:15px; margin-bottom:10px; background:#fff; border-radius: 4px;">
+        <input type="text" placeholder="הקלד שאלה..." value="${q.q}" onchange="tempQuiz[${index}].q=this.value" style="font-weight:bold;">
+        <input type="text" placeholder="תשובה נכונה" value="${q.correct}" onchange="tempQuiz[${index}].correct=this.value">
+        <label style="font-size:0.9rem;">משקל ציון:</label> 
+        <input type="number" value="${q.weight}" onchange="tempQuiz[${index}].weight=parseInt(this.value)">
+      </div>
+    `).join('');
+  }
+
+  function saveKnowledge() {
+    const id = document.getElementById('k-id').value;
+    const title = document.getElementById('k-title').value;
+    const targetType = document.querySelector('input[name="k-target-type"]:checked').value;
+    const targetId = document.getElementById('k-target-id').value;
+    
+    if(!title) { alert('חובה להזין כותרת.'); return; }
+
+    if(id) {
+      let k = knowledgeData.find(x => x.id == id);
+      k.title = title; k.targetType = targetType; k.targetId = targetId; k.quiz = tempQuiz;
+    } else {
+      knowledgeData.push({ id: Date.now(), title, targetType, targetId, quiz: tempQuiz });
+    }
+    closeModal('knowledge-modal');
+    renderKnowledgeList();
+    renderTestReview('edit'); 
+  }
+
+  function renderKnowledgeList() {
+    const cont = document.getElementById('knowledge-list-container');
+    cont.innerHTML = knowledgeData.map(k => `<div class="list-item"><strong>${k.title}</strong><button class="btn-small" onclick="openKnowledgeModal(${k.id})">ערוך</button></div>`).join('');
+  }
+
+  function renderTestReview(viewType) {
+    const cont = document.getElementById('test-review-container');
+    if(viewType === 'edit') {
+      cont.innerHTML = knowledgeData.map(k => `
+        <div class="list-item">
+          <strong>${k.title} (${k.quiz.length} שאלות)</strong>
+          <button class="btn-primary" onclick="openKnowledgeModal(${k.id})">ערוך מבחן</button>
+        </div>
+      `).join('');
+      if(knowledgeData.length === 0) cont.innerHTML = "<p>אין מבחנים במערכת כרגע.</p>";
+    } else {
+      cont.innerHTML = `<p>היסטוריית הציונים תוצג כאן לאחר שהעובדים יתחילו לבצע מבחנים.</p>`;
+    }
+  }
+
+  // --- משימות ---
+  function openTaskModal() {
+    document.getElementById('task-title').value = '';
+    const cont = document.getElementById('assignees-container');
+    const subs = usersData.filter(u => u.id !== currentUser.id && u.role !== 'admin');
+    cont.innerHTML = subs.map(u => `
+      <label style="display:block; margin-bottom:5px;">
+        <input type="checkbox" class="assignee-cb" value="${u.id}"> ${u.fullName}
+      </label>
+    `).join('');
+    document.getElementById('task-modal').classList.remove('hidden');
+  }
+
+  function toggleAssignees(checkAll) {
+    document.querySelectorAll('.assignee-cb').forEach(cb => cb.checked = checkAll);
+  }
+
+  function saveTask() {
+    const title = document.getElementById('task-title').value;
+    const selectedIds = Array.from(document.querySelectorAll('.assignee-cb:checked')).map(cb => parseInt(cb.value));
+    
+    if(!title || selectedIds.length === 0) { alert("חובה להזין כותרת ולבחור לפחות עובד אחד."); return; }
+    
+    tasksData.push({ id: Date.now(), title, assignedTo: selectedIds, createdBy: currentUser.id });
+    closeModal('task-modal');
+    renderTasks();
+  }
+
+  function renderTasks() {
+    const cont = document.getElementById('tasks-container');
+    let myTasks = tasksData.filter(t => t.assignedTo.includes(currentUser.id) || t.createdBy === currentUser.id);
+    cont.innerHTML = myTasks.map(t => `<div class="list-item"><strong>${t.title}</strong></div>`).join('');
+  }
+
+  // --- ניהול עובדים (עץ ועריכה) ---
+  function renderUsers() {
+    const cont = document.getElementById('tree-container');
+    cont.innerHTML = '';
+    const rootNodes = usersData.filter(u => currentUser.role === 'admin' ? u.managerId === null : u.managerId === currentUser.id);
+    
+    const ul = document.createElement('ul');
+    rootNodes.forEach(node => ul.appendChild(createTreeNode(node)));
+    cont.appendChild(ul);
+  }
+
+  function createTreeNode(user) {
+    const li = document.createElement('li');
+    const hasChildren = usersData.some(u => u.managerId === user.id);
+    li.innerHTML = `
+      <div class="list-item" style="margin-bottom: 5px;">
+        <span>${hasChildren ? '▼' : '👤'} ${user.fullName} (${user.role})</span>
+        <button class="btn-small" onclick="openUserModal(${user.id})">ערוך</button>
+      </div>`;
+    
+    if (hasChildren) {
+      const childrenUl = document.createElement('ul');
+      childrenUl.className = 'tree-ul';
+      usersData.filter(u => u.managerId === user.id).forEach(child => childrenUl.appendChild(createTreeNode(child)));
+      li.appendChild(childrenUl);
+    }
+    return li;
+  }
+
+  function openUserModal(id) {
+    if(id) {
+      const u = usersData.find(x => x.id === id);
+      document.getElementById('u-id').value = u.id;
+      document.getElementById('u-name').value = u.fullName;
+      document.getElementById('u-username').value = u.username;
+      document.getElementById('u-password').value = u.password;
+      document.getElementById('u-role').value = u.role;
+    } else {
+      document.getElementById('u-id').value = '';
+    }
+    document.getElementById('user-modal').classList.remove('hidden');
+  }
+
+  function saveUser() {
+    closeModal('user-modal');
+    renderUsers();
+  }
+
+</script>
+</body>
+</html>
