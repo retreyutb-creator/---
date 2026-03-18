@@ -1,0 +1,42 @@
+{
+  "users": [
+    { "id": 1, "username": "admin", "role": "admin", "managerId": null },
+    { "id": 2, "username": "danny_manager", "role": "manager", "managerId": 1 },
+    { "id": 3, "username": "yossi_employee", "role": "employee", "managerId": 2 }
+  ],
+  "tasks": [
+    {
+      "id": 101,
+      "type": "checklist", 
+      "title": "ביקורת סניף חודשית",
+      "targetAudience": {"type": "subordinates_of", "userId": 2},
+      "subTasks": [
+        {"id": 1, "text": "בדיקת קופות", "isCompleted": false},
+        {"id": 2, "text": "בדיקת מלאי", "isCompleted": false}
+      ],
+      "expiresAt": "2026-04-01T00:00:00Z"
+    },
+    {
+      "id": 102,
+      "type": "alert",
+      "title": "שינוי נהלי אבטחה!",
+      "content": "שימו לב, הקוד לאזעקה שונה.",
+      "expiresAt": "2026-03-20T00:00:00Z"
+    }
+  ],
+  "knowledge": [
+    {
+      "id": 201,
+      "title": "נוהל החזרות",
+      "blocks": [
+        { "type": "text", "content": "כדי לבצע החזרה יש לוודא..." },
+        { "type": "image", "url": "/uploads/return_policy.png" },
+        { "type": "quiz", "question": "מה תוקף החזרה?", "options": ["14 יום", "חודש"], "correctIndex": 0 }
+      ],
+      "recurringTask": { "enabled": true, "intervalDays": 90 }
+    }
+  ],
+  "logs": [
+    { "userId": 3, "action": "read_knowledge", "itemId": 201, "timestamp": "2025-12-01T10:00:00Z" }
+  ]
+}
