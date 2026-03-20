@@ -9,129 +9,94 @@
 
 <style>
   :root { 
-    --brand-black: #1a1a1a; 
-    --brand-red: #cc0000; 
-    --brand-red-hover: #a30000; 
-    --bg-color: #f4f4f4; 
-    --card-bg: #ffffff; 
-    --text-main: #333333; 
-    --border-color: #e0e0e0; 
-    --danger: #dc3545; 
-    --success: #28a745; 
+    --brand-black: #1a1a1a; --brand-red: #cc0000; --brand-red-hover: #a30000; 
+    --bg-color: #f4f4f4; --card-bg: #ffffff; --text-main: #333333; 
+    --border-color: #e0e0e0; --danger: #dc3545; --success: #28a745; 
   }
   
-  * { box-sizing: border-box; font-family: 'Heebo', sans-serif; transition: background-color 0.3s, color 0.3s; }
-  body { background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; padding-bottom: 80px; }
+  * { box-sizing: border-box; font-family: 'Heebo', sans-serif; }
+  body { background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; padding-bottom: 50px; }
   
-  /* Header & Nav */
-  header { background-color: var(--brand-black); color: white; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; height: 70px; }
+  /* --- Header & Nav (Desktop vs Mobile) --- */
+  header { background-color: var(--brand-black); color: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
   
-  .header-right { flex: 1; display: flex; align-items: center; justify-content: flex-start; }
-  .header-center { flex: 2; text-align: center; }
-  .header-left { flex: 1; display: flex; align-items: center; justify-content: flex-end; }
+  /* Desktop Layout (Logo top, Nav below evenly spaced) */
+  @media (min-width: 901px) {
+    header { display: flex; flex-direction: column; align-items: center; padding: 15px 0 0 0; }
+    header h1 { margin: 0 0 15px 0; font-size: 2rem; color: var(--brand-red); font-weight: 800; }
+    .hamburger { display: none; }
+    nav { display: flex; width: 100%; justify-content: space-evenly; background: #111; border-top: 1px solid #333; }
+    nav button { background: none; border: none; color: white; font-size: 1.05rem; cursor: pointer; padding: 15px 10px; border-bottom: 4px solid transparent; font-weight: 500; transition: 0.2s; width: 100%; text-align: center; }
+    nav button:hover, nav button.active { color: var(--brand-red); border-bottom: 4px solid var(--brand-red); background: #0a0a0a; }
+  }
 
-  header h1 { margin: 0; font-size: 1.8rem; color: var(--brand-red); font-weight: 800; white-space: nowrap; }
-  
-  .hamburger { display: none; font-size: 2rem; cursor: pointer; color: white; user-select: none; }
-  
-  nav { display: flex; gap: 15px; }
-  nav button { background: none; border: none; color: white; font-size: 1.05rem; cursor: pointer; padding: 22px 5px; border-bottom: 3px solid transparent; font-weight: 500; transition: color 0.2s; }
-  nav button:hover, nav button.active { color: var(--brand-red); border-bottom: 3px solid var(--brand-red); }
-  
-  /* תפריט מובייל */
+  /* Mobile Layout */
   @media (max-width: 900px) {
-    .hamburger { display: block; }
-    nav { display: none; position: absolute; top: 70px; right: 0; width: 250px; background-color: var(--brand-black); flex-direction: column; padding: 10px 0; box-shadow: -2px 5px 10px rgba(0,0,0,0.3); gap: 0; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; height: 70px; }
+    header h1 { font-size: 1.5rem; color: var(--brand-red); margin: 0; }
+    .hamburger { display: block; font-size: 2rem; cursor: pointer; color: white; }
+    nav { display: none; position: absolute; top: 70px; right: 0; width: 250px; background-color: var(--brand-black); flex-direction: column; padding: 0; box-shadow: -2px 5px 10px rgba(0,0,0,0.3); }
     nav.show-mobile { display: flex; }
-    nav button { text-align: right; padding: 15px 20px; border-bottom: 1px solid #333; width: 100%; border-right: 4px solid transparent; }
-    nav button:hover, nav button.active { border-bottom: 1px solid #333; color: var(--brand-red); background: #111; border-right: 4px solid var(--brand-red); }
+    nav button { text-align: right; padding: 15px 20px; border-bottom: 1px solid #333; width: 100%; background: none; color: white; border-right: 4px solid transparent; font-size: 1rem; border-left: none; border-top: none; }
+    nav button:hover, nav button.active { color: var(--brand-red); background: #111; border-right: 4px solid var(--brand-red); }
   }
 
   .hidden { display: none !important; }
-  .container { max-width: 900px; margin: 30px auto; padding: 0 15px; position: relative; }
-  
-  .editable-parent { position: relative; }
+  .container { max-width: 1000px; margin: 30px auto; padding: 0 15px; }
   .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
   .card-title { margin-top: 0; font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; border-bottom: 2px solid var(--brand-red); display: inline-block; padding-bottom: 5px; }
   
   input, select, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; }
   input[type="checkbox"] { width: auto; margin-left: 5px; transform: scale(1.2); }
-  .btn-primary { background-color: var(--brand-red); color: white; border: none; padding: 10px 15px; font-weight: 800; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+  .btn-primary { background-color: var(--brand-red); color: white; border: none; padding: 10px 15px; font-weight: 800; border-radius: 4px; cursor: pointer; font-size: 1rem; }
   .btn-primary:hover { background-color: var(--brand-red-hover); }
   .btn-small { background-color: var(--brand-black); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;}
-  .btn-danger { background-color: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
   
   .list-item { border: 1px solid var(--border-color); padding: 15px; border-radius: 4px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; background: #fafafa; flex-wrap: wrap; gap: 10px;}
-  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
   .modal-content { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
-  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-  .modal-actions button { flex: 1; }
-  .tree-ul { list-style-type: none; padding-right: 20px; margin: 5px 0; border-right: 1px dashed var(--border-color); }
-
-  /* --- מערכת העיצוב --- */
-  .design-mode-active .editable-parent { outline: 2px dashed var(--brand-red); outline-offset: 4px; }
-  .design-edit-btn { display: none; position: absolute; top: -15px; left: -15px; background: white; border: 2px solid var(--brand-red); border-radius: 50%; width: 35px; height: 35px; text-align: center; line-height: 30px; cursor: pointer; z-index: 500; font-size: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-  .design-mode-active .design-edit-btn { display: block; }
-  .currently-editing { outline: 3px solid #007bff !important; }
-
-  #designer-panel {
-    position: fixed; bottom: 0; left: 0; width: 100%; background: #222; border-top: 3px solid var(--brand-red);
-    padding: 15px; display: flex; gap: 15px; flex-wrap: wrap; z-index: 9999; justify-content: center; align-items: center;
-    transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
-  }
-  #designer-panel.open { transform: translateY(0); }
-  #designer-panel label { color: white; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-  #designer-panel input[type="color"] { width: 40px; height: 40px; border: none; border-radius: 50%; cursor: pointer; padding: 0; background: none; }
-  #designer-panel input[type="number"], #designer-panel select { width: 100px; padding: 8px; border-radius: 4px; border: none; margin-bottom: 0; }
+  
+  /* Test Anti-Cheat Warning */
+  #anti-cheat-warning { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(200,0,0,0.95); color:white; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; text-align:center; padding:20px; }
 </style>
 </head>
-<body data-edit-id="body-main" class="editable-parent">
-  <div class="design-edit-btn" onclick="openDesigner(event, 'body-main')">✏️</div>
+<body>
 
   <div id="login-section" class="container" style="max-width: 400px; margin-top: 100px;">
-    <div class="card editable-parent" data-edit-id="login-card" style="text-align: center;">
-      <div class="design-edit-btn" onclick="openDesigner(event, 'login-card')">✏️</div>
+    <div class="card" style="text-align: center;">
       <h2 class="card-title">בנא משקאות - תפעול</h2>
-      <input type="text" id="login-username" placeholder="שם משתמש (admin / marketing)">
-      <input type="password" id="login-password" placeholder="סיסמה (123)">
-      <button class="btn-primary" style="width: 100%;" onclick="login()">התחבר למערכת</button>
+      <form onsubmit="handleLogin(event)">
+        <input type="text" id="login-username" name="username" placeholder="שם משתמש (admin/area/yossi)" autocomplete="username" required>
+        <input type="password" id="login-password" name="password" placeholder="סיסמה (123)" autocomplete="current-password" required>
+        <button type="submit" class="btn-primary" style="width: 100%;">התחבר למערכת</button>
+      </form>
       <p id="login-error" style="color: red; display: none; font-size: 0.9rem; margin-top: 10px;">פרטים שגויים.</p>
     </div>
   </div>
 
-  <header id="main-header" class="hidden editable-parent" data-edit-id="header-main">
-    <div class="design-edit-btn" onclick="openDesigner(event, 'header-main')">✏️</div>
-    <div class="header-right"><div class="hamburger" onclick="toggleMobileMenu()">☰</div></div>
-    <div class="header-center"><h1>בנא משקאות</h1></div>
-    <div class="header-left">
-      <nav id="main-nav">
-        <button onclick="showTab('dashboard')" id="tab-dashboard" class="active">ראשי</button>
-        <button onclick="showTab('tasks')" id="tab-tasks">משימות</button>
-        <button onclick="showTab('knowledge')" id="tab-knowledge">מרכז ידע</button>
-        <button onclick="showTab('test-review')" id="tab-test-review" class="hidden">בקרת מבחנים</button>
-        <button onclick="showTab('users')" id="tab-users" class="hidden">ניהול עובדים</button>
-        <button onclick="showTab('catalog')" id="tab-catalog" class="hidden">קטגוריות ופריטים</button>
-        
-        <button onclick="toggleDesignMode()" id="tab-design-mode" class="hidden" style="color: #fbc02d;">🎨 מצב עיצוב</button>
-        <button onclick="logout()">התנתק</button>
-      </nav>
-    </div>
+  <header id="main-header" class="hidden">
+    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; padding: 0 20px;">
+        <div class="hamburger" onclick="document.getElementById('main-nav').classList.toggle('show-mobile')">☰</div>
+        <h1>בנא משקאות</h1>
+        <div style="width: 30px;"></div> </div>
+    <nav id="main-nav">
+      <button onclick="showTab('dashboard')" id="tab-dashboard">ראשי</button>
+      <button onclick="showTab('tasks')" id="tab-tasks">משימות</button>
+      <button onclick="showTab('knowledge')" id="tab-knowledge">מרכז ידע</button>
+      <button onclick="showTab('test-review')" id="tab-test-review" class="hidden">בקרת מבחנים</button>
+      <button onclick="showTab('users')" id="tab-users" class="hidden">ניהול עובדים</button>
+      <button onclick="showTab('catalog')" id="tab-catalog" class="hidden">קטגוריות ופריטים</button>
+      <button onclick="handleLogout()" style="color: #ffaa00;">התנתק</button>
+    </nav>
   </header>
 
   <div class="container hidden" id="app-content">
     
-    <div id="dashboard-section">
-      <div class="card editable-parent" data-edit-id="dash-card">
-        <div class="design-edit-btn" onclick="openDesigner(event, 'dash-card')">✏️</div>
-        <h2 class="card-title">דשבורד ראשי</h2>
-        <p>שלום, <span id="user-greeting"></span>!</p>
-      </div>
-    </div>
+    <div id="dashboard-section"><div class="card"><h2 class="card-title">דשבורד ראשי</h2><p>שלום, <span id="user-greeting"></span>!</p></div></div>
 
     <div id="tasks-section" class="hidden">
-      <div class="card editable-parent" data-edit-id="tasks-card">
-        <div class="design-edit-btn" onclick="openDesigner(event, 'tasks-card')">✏️</div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <h2 class="card-title" style="margin: 0;">ניהול משימות</h2>
           <button id="btn-create-task" class="btn-primary hidden" onclick="openTaskModal()">+ משימה חדשה</button>
         </div>
@@ -139,50 +104,9 @@
       </div>
     </div>
 
-    <div id="users-section" class="hidden">
-      <div class="card editable-parent" data-edit-id="users-card">
-        <div class="design-edit-btn" onclick="openDesigner(event, 'users-card')">✏️</div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-          <h2 class="card-title" style="margin: 0;">ניהול עובדים</h2>
-          <button class="btn-primary" onclick="openUserModal(null)">+ הוסף עובד</button>
-        </div>
-        <div id="tree-container"></div>
-      </div>
-    </div>
-
-    <div id="catalog-section" class="hidden">
-      <div class="card editable-parent" data-edit-id="cat-card">
-        <div class="design-edit-btn" onclick="openDesigner(event, 'cat-card')">✏️</div>
-        <h2 class="card-title">ניהול קטגוריות</h2>
-        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-          <input type="text" id="new-cat-name" placeholder="שם קטגוריה">
-          <button class="btn-small" onclick="addCategory()">הוסף ידנית</button>
-        </div>
-        <div style="margin-bottom: 20px; font-size: 0.9rem; border: 1px dashed #ccc; padding: 10px;">
-          <input type="file" accept=".xlsx, .xls" style="margin-top: 10px;" onchange="handleExcelUpload(event, 'categories')">
-        </div>
-        <div id="cat-list"></div>
-      </div>
-
-      <div class="card editable-parent" data-edit-id="items-card">
-        <div class="design-edit-btn" onclick="openDesigner(event, 'items-card')">✏️</div>
-        <h2 class="card-title">ניהול פריטים</h2>
-        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-          <input type="text" id="new-item-barcode" placeholder="ברקוד">
-          <input type="text" id="new-item-name" placeholder="שם פריט">
-          <button class="btn-small" onclick="addItem()">הוסף ידנית</button>
-        </div>
-        <div style="margin-bottom: 20px; font-size: 0.9rem; border: 1px dashed #ccc; padding: 10px;">
-          <input type="file" accept=".xlsx, .xls" style="margin-top: 10px;" onchange="handleExcelUpload(event, 'items')">
-        </div>
-        <div id="items-list"></div>
-      </div>
-    </div>
-
     <div id="knowledge-section" class="hidden">
-      <div class="card editable-parent" data-edit-id="know-card">
-        <div class="design-edit-btn" onclick="openDesigner(event, 'know-card')">✏️</div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
           <h2 class="card-title" style="margin: 0;">ניהול ידע</h2>
           <button id="btn-create-knowledge" class="btn-primary hidden" onclick="openKnowledgeModal()">+ יצירת ידע חדש</button>
         </div>
@@ -190,16 +114,28 @@
       </div>
     </div>
 
-    <div id="test-review-section" class="hidden">
-      <div class="card editable-parent" data-edit-id="test-card">
-        <div class="design-edit-btn" onclick="openDesigner(event, 'test-card')">✏️</div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-          <h2 class="card-title" style="margin: 0;">בקרת ועריכת מבחנים</h2>
-          <button class="btn-primary" onclick="openKnowledgeModal(null, true)">+ יצירת מבחן חדש</button>
+    <div id="users-section" class="hidden">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+          <h2 class="card-title" style="margin: 0;">ניהול עובדים</h2>
         </div>
+        <div id="tree-container"></div>
+      </div>
+    </div>
+
+    <div id="catalog-section" class="hidden">
+      <div class="card">
+        <h2 class="card-title">ניהול פריטים מתקדם</h2>
+        <div id="items-list"></div>
+      </div>
+    </div>
+
+    <div id="test-review-section" class="hidden">
+      <div class="card">
+        <h2 class="card-title">בקרת מבחנים</h2>
         <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-          <button class="btn-small" onclick="renderTestReview('logs')">ציוני עובדים</button>
-          <button class="btn-small" onclick="renderTestReview('edit')">עריכת מבחנים קיימים</button>
+          <button class="btn-small" onclick="renderTestReview('logs')">ציוני עובדים ובקרה</button>
+          <button class="btn-small" onclick="renderTestReview('edit')">ניהול מבחנים (יצירה/עריכה)</button>
         </div>
         <div id="test-review-container"></div>
       </div>
@@ -207,97 +143,173 @@
 
   </div>
 
-  <div id="designer-panel">
-    <div style="font-weight: bold; color: var(--brand-red); margin-left: 10px;">עורך עיצוב חכם</div>
-    
-    <label>רקע
-      <input type="color" id="dp-bg-color" oninput="applyDesign('backgroundColor', this.value)">
-    </label>
-    
-    <label>צבע טקסט
-      <input type="color" id="dp-text-color" oninput="applyDesign('color', this.value)">
-    </label>
-    
-    <label>גודל גופן (px)
-      <input type="number" id="dp-font-size" oninput="applyDesign('fontSize', this.value + 'px')">
-    </label>
-    
-    <label>משפחת גופן
-      <select id="dp-font-family" onchange="applyDesign('fontFamily', this.value)">
-        <option value="Heebo">Heebo</option>
-        <option value="Arial">Arial</option>
-        <option value="Tahoma">Tahoma</option>
-        <option value="Courier New">Courier New</option>
+  <div id="task-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="border-bottom: 2px solid var(--brand-red); padding-bottom: 10px;">יצירת משימה</h3>
+      
+      <label>כותרת משימה:</label>
+      <input type="text" id="task-title" placeholder="למשל: סידור מקרר">
+      
+      <label>סוג משימה:</label>
+      <select id="task-type" onchange="toggleTaskTypeOptions()">
+        <option value="text">הודעה / טקסט בלבד</option>
+        <option value="checklist">צ'ק-ליסט (תתי-משימות)</option>
+        <option id="opt-test-task" value="test" class="hidden">ביצוע מבחן (מנהל אזור ומעלה)</option>
       </select>
-    </label>
 
-    <div style="display: flex; gap: 10px; margin-right: auto; margin-right: 20px;">
-      <button class="btn-small" id="dp-text-toggle" onclick="toggleTextEdit()">📝 הפעל עריכת טקסט</button>
-      <button class="btn-primary" onclick="saveDesignLocally()">💾 שמור עיצוב לאתר</button>
-      <button class="btn-small" style="background: var(--brand-black);" onclick="closeDesigner()">❌ סגור</button>
+      <div id="task-checklist-container" class="hidden" style="margin-bottom: 15px; border: 1px dashed #ccc; padding: 10px;">
+        <label>הוסף סעיפים לביצוע:</label>
+        <div style="display:flex; gap:5px;"><input type="text" id="new-cl-item"><button class="btn-small" type="button" onclick="addChecklistItem()">הוסף</button></div>
+        <ul id="cl-preview"></ul>
+      </div>
+
+      <div id="task-test-container" class="hidden" style="margin-bottom: 15px; background: #fff3cd; padding: 10px;">
+        <label>בחר מבחן:</label>
+        <select id="task-test-select"></select>
+      </div>
+
+      <label>תדירות / תזמון:</label>
+      <select id="task-recurrence">
+        <option value="once">חד פעמי</option>
+        <option value="weekly">שבועי (כל יום א')</option>
+        <option value="range">טווח תאריכים</option>
+      </select>
+
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="saveTask()">שמור משימה</button>
+        <button class="btn-small" onclick="closeModal('task-modal')">ביטול</button>
+      </div>
     </div>
   </div>
 
-  <div id="modals-container"></div>
+  <div id="item-info-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="text-align: center;">
+      <h3 id="info-name" style="color: var(--brand-red);"></h3>
+      <div style="width: 150px; height: 150px; background: #eee; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+        📷 תמונת מוצר
+      </div>
+      <p id="info-desc" style="font-size: 1.1rem;"></p>
+      <div style="background: #fafafa; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: right;">
+        <div><strong>מחיר רגיל:</strong> <span id="info-price"></span> ₪</div>
+        <div id="info-club-div" style="color: var(--brand-red); font-weight: bold; margin-top: 5px;">
+          <strong>מחיר מועדון:</strong> <span id="info-club"></span> ₪
+        </div>
+      </div>
+      <button class="btn-primary" style="margin-top: 20px; width: 100%;" onclick="closeModal('item-info-modal')">סגור</button>
+    </div>
+  </div>
+
+  <div id="active-test-overlay" class="modal-overlay hidden" style="background: white; z-index: 5000; flex-direction: column; justify-content: flex-start; padding: 20px; overflow-y: auto;">
+    <div style="max-width: 800px; width: 100%; margin: 0 auto;">
+      <div style="display: flex; justify-content: space-between; border-bottom: 2px solid var(--brand-red); padding-bottom: 10px; margin-bottom: 20px;">
+        <h2 id="active-test-title" style="margin: 0;">מבחן פעיל</h2>
+        <div style="color: red; font-weight: bold;">זמן נותר: <span id="test-timer">60:00</span></div>
+      </div>
+      <p style="background: #fff3cd; padding: 10px; border-radius: 4px; font-size: 0.9rem;">
+        ⚠️ <strong>אזהרה:</strong> יציאה ממסך זה, פתיחת חלון אחר או פיצול מסך יגרמו לנעילת המבחן ופסילתו המיידית!
+      </p>
+      <div id="active-test-questions"></div>
+      <button class="btn-primary" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 1.2rem;" onclick="submitActiveTest()">סיים והגש מבחן</button>
+    </div>
+  </div>
+
+  <div id="anti-cheat-warning" class="hidden">
+    <h1 style="font-size: 4rem; margin: 0;">🛑</h1>
+    <h2>המבחן ננעל!</h2>
+    <p>זוהתה יציאה מהלשונית או איבוד מיקוד של המסך במהלך הבחינה.</p>
+    <p>עליך לפנות למנהל האזור כדי שיפתח לך את המבחן מחדש.</p>
+    <button class="btn-small" style="margin-top: 20px; border: 1px solid white;" onclick="document.getElementById('anti-cheat-warning').classList.add('hidden'); showTab('dashboard');">חזור לדשבורד</button>
+  </div>
+
 
 <script>
-  // --- מסד נתונים וירטואלי ---
+  // --- Data Structure ---
+  // Roles: admin, area_manager (מנהל אזור), manager (מנהל סניף), employee
   let usersData = [
     { id: 1, username: 'admin', password: '123', fullName: 'תומר (מנכ"ל)', role: 'admin', managerId: null },
-    { id: 2, username: 'danny', password: '123', fullName: 'דני (מנהל)', role: 'manager', managerId: 1 },
-    { id: 3, username: 'yossi', password: '123', fullName: 'יוסי (עובד)', role: 'employee', managerId: 2 },
-    // משתמש השיווק החדש:
-    { id: 5, username: 'marketing', password: '123', fullName: 'מחלקת שיווק', role: 'marketing', managerId: null }
+    { id: 2, username: 'area', password: '123', fullName: 'רועי (מנהל אזור)', role: 'area_manager', managerId: 1 },
+    { id: 3, username: 'danny', password: '123', fullName: 'דני (מנהל סניף)', role: 'manager', managerId: 2 },
+    { id: 4, username: 'yossi', password: '123', fullName: 'יוסי (עובד)', role: 'employee', managerId: 3 }
   ];
 
-  let categoriesData = [{ id: 1, name: "קטגוריית וודקה" }, { id: 2, name: "יינות" }];
-  let itemsData = [{ id: 1, barcode: "729000123", name: "יין ירושלים ק.ס" }];
-  let knowledgeData = []; 
-  let tasksData = []; 
+  let itemsData = [
+    { id: 1, barcode: "7290001", name: "וודקה גרייגוס 700מ״ל", category: "וודקה", price: 140, clubPrice: 125, desc: "וודקה צרפתית סופר פרימיום, מיוצרת מחיטת חורף ומי מעיין." },
+    { id: 2, barcode: "7290002", name: "יין ירושלים ק.ס", category: "יין", price: 45, clubPrice: null, desc: "" }
+  ];
+
+  let knowledgeData = [
+    { id: 1, title: "נהלי סגירת קופה (טקסט)", type: "text", content: "יש לספור את הקופה, להוציא Z, ולהפקיד בכספת." },
+    { id: 2, title: "סידור מדפים (וידאו)", type: "video", content: "https://www.w3schools.com/html/mov_bbb.mp4" }, // דוגמה לוידאו
+    // מבחן מובנה לדוגמה:
+    { id: 3, title: "מבחן הכרת אלכוהול", type: "test", quiz: [
+        { q: "ממה מייצרים וודקה בדרך כלל?", options: ["ענבים", "חיטה/תפוחי אדמה", "אורז"], correct: 1 },
+        { q: "מה תוקף החזרה של בקבוק סגור?", options: ["14 יום", "חודש", "אי אפשר"], correct: 0 }
+    ]}
+  ];
+
+  let tasksData = [];
+  let testLogsData = []; // { empId, testId, score, completedAt (timestamp), answers: [] }
+  let currentChecklist = [];
 
   let currentUser = null;
+  let activeTestInterval = null;
+  let isTakingTest = false;
 
-  // טעינת עיצוב שמור בעליית הדף
-  window.onload = () => { loadDesignLocally(); };
+  // --- Init & Auth ---
+  window.onload = () => {
+    const savedUser = localStorage.getItem('bana_user');
+    if(savedUser) {
+      currentUser = JSON.parse(savedUser);
+      processLoginSuccess();
+    }
+  };
 
-  function toggleMobileMenu() {
-    document.getElementById('main-nav').classList.toggle('show-mobile');
-  }
-
-  function login() {
+  function handleLogin(e) {
+    e.preventDefault(); // מונע ריענון של הטופס
     const user = document.getElementById('login-username').value;
     const pass = document.getElementById('login-password').value;
     const foundUser = usersData.find(u => u.username === user && u.password === pass);
     
     if (foundUser) {
       currentUser = foundUser;
-      document.getElementById('user-greeting').innerText = currentUser.fullName;
-      document.getElementById('login-section').classList.add('hidden');
-      document.getElementById('main-header').classList.remove('hidden');
-      document.getElementById('app-content').classList.remove('hidden');
-      
-      const isManager = currentUser.role === 'admin' || currentUser.role === 'manager';
-      document.getElementById('tab-users').classList.toggle('hidden', !isManager);
-      document.getElementById('tab-test-review').classList.toggle('hidden', !isManager);
-      document.getElementById('btn-create-knowledge').classList.toggle('hidden', !isManager);
-      document.getElementById('btn-create-task').classList.toggle('hidden', !isManager);
-      document.getElementById('tab-catalog').classList.toggle('hidden', currentUser.role !== 'admin');
-      
-      // כפתור עיצוב רק למשווק או לאדמין
-      document.getElementById('tab-design-mode').classList.toggle('hidden', currentUser.role !== 'marketing');
-
-      showTab('dashboard');
+      localStorage.setItem('bana_user', JSON.stringify(currentUser));
+      processLoginSuccess();
     } else {
       document.getElementById('login-error').style.display = 'block';
     }
   }
 
-  function logout() {
-    currentUser = null;
-    document.getElementById('login-section').classList.remove('hidden');
-    document.getElementById('main-header').classList.add('hidden');
-    document.getElementById('app-content').classList.add('hidden');
-    if(document.body.classList.contains('design-mode-active')) toggleDesignMode(); // כיבוי מצב עיצוב
+  function processLoginSuccess() {
+    document.getElementById('user-greeting').innerText = currentUser.fullName;
+    document.getElementById('login-section').classList.add('hidden');
+    document.getElementById('main-header').classList.remove('hidden');
+    document.getElementById('app-content').classList.remove('hidden');
+    
+    // הרשאות
+    const isAreaOrAdmin = currentUser.role === 'admin' || currentUser.role === 'area_manager';
+    const isManager = isAreaOrAdmin || currentUser.role === 'manager';
+    
+    document.getElementById('tab-users').classList.toggle('hidden', !isManager);
+    document.getElementById('tab-catalog').classList.toggle('hidden', !isManager);
+    document.getElementById('btn-create-knowledge').classList.toggle('hidden', !isManager);
+    document.getElementById('btn-create-task').classList.toggle('hidden', !isManager);
+    
+    // בקרת מבחנים רק למנהל אזור ואדמין
+    document.getElementById('tab-test-review').classList.toggle('hidden', !isAreaOrAdmin);
+    document.getElementById('opt-test-task').classList.toggle('hidden', !isAreaOrAdmin);
+
+    showTab('dashboard');
+  }
+
+  function handleLogout() {
+    if(confirm("האם אתה בטוח שברצונך להתנתק?")) {
+      currentUser = null;
+      localStorage.removeItem('bana_user');
+      document.getElementById('login-section').classList.remove('hidden');
+      document.getElementById('main-header').classList.add('hidden');
+      document.getElementById('app-content').classList.add('hidden');
+      document.getElementById('login-password').value = '';
+    }
   }
 
   function showTab(tabName) {
@@ -309,100 +321,248 @@
     
     document.getElementById(tabName + '-section').classList.remove('hidden');
     document.getElementById('tab-' + tabName).classList.add('active');
+
+    if(tabName === 'catalog') renderCatalog();
+    if(tabName === 'users') renderUsers();
+    if(tabName === 'knowledge') renderKnowledge();
+    if(tabName === 'tasks') renderTasks();
   }
 
-  // --- מערכת עריכת עיצוב (Marketing) ---
-  let currentEditEl = null;
+  function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-  function toggleDesignMode() {
-    document.body.classList.toggle('design-mode-active');
-    const btn = document.getElementById('tab-design-mode');
-    
-    if(document.body.classList.contains('design-mode-active')) {
-      btn.innerHTML = "❌ סגור מצב עיצוב";
-      btn.style.color = "white";
+  // --- Items & Catalog ---
+  function renderCatalog() {
+    const cont = document.getElementById('items-list');
+    cont.innerHTML = itemsData.map(i => {
+      let infoBtn = i.desc ? `<button class="btn-small" style="background:#007bff;" onclick="openItemInfo(${i.id})">הסבר לי על המוצר</button>` : '';
+      return `<div class="list-item">
+        <div style="flex:1;">
+          <strong>${i.name}</strong> (${i.category})<br>
+          <span style="font-size:0.8rem; color:gray;">ברקוד: ${i.barcode} | מחיר: ${i.price}₪</span>
+        </div>
+        <div>${infoBtn}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function openItemInfo(id) {
+    const item = itemsData.find(i => i.id === id);
+    document.getElementById('info-name').innerText = item.name;
+    document.getElementById('info-desc').innerText = item.desc;
+    document.getElementById('info-price').innerText = item.price;
+    if(item.clubPrice) {
+      document.getElementById('info-club-div').style.display = 'block';
+      document.getElementById('info-club').innerText = item.clubPrice;
     } else {
-      btn.innerHTML = "🎨 מצב עיצוב";
-      btn.style.color = "#fbc02d";
-      closeDesigner();
+      document.getElementById('info-club-div').style.display = 'none';
     }
+    document.getElementById('item-info-modal').classList.remove('hidden');
   }
 
-  function openDesigner(event, editId) {
-    event.stopPropagation();
-    
-    // הסרת סימון קודם
-    if(currentEditEl) currentEditEl.classList.remove('currently-editing');
-    
-    currentEditEl = document.querySelector(`[data-edit-id="${editId}"]`);
-    currentEditEl.classList.add('currently-editing');
-    document.getElementById('designer-panel').classList.add('open');
-    
-    // שליפת ערכים קיימים
-    const styles = window.getComputedStyle(currentEditEl);
-    document.getElementById('dp-font-size').value = parseInt(styles.fontSize);
-    
-    // איפוס כפתור טקסט
-    currentEditEl.contentEditable = "false";
-    document.getElementById('dp-text-toggle').innerHTML = "📝 הפעל עריכת טקסט";
+  // --- Knowledge ---
+  function renderKnowledge() {
+    const cont = document.getElementById('knowledge-list-container');
+    cont.innerHTML = knowledgeData.map(k => {
+      let icon = k.type === 'video' ? '🎥' : (k.type === 'test' ? '📝' : '📄');
+      return `<div class="list-item">
+        <strong>${icon} ${k.title}</strong>
+        <button class="btn-small" onclick="viewKnowledge(${k.id})">צפה / בצע</button>
+      </div>`;
+    }).join('');
   }
 
-  function closeDesigner() {
-    document.getElementById('designer-panel').classList.remove('open');
-    if(currentEditEl) {
-      currentEditEl.classList.remove('currently-editing');
-      currentEditEl.contentEditable = "false";
-      currentEditEl = null;
-    }
-  }
-
-  function applyDesign(prop, value) {
-    if(!currentEditEl) return;
-    currentEditEl.style[prop] = value;
-  }
-
-  function toggleTextEdit() {
-    if(!currentEditEl) return;
-    const btn = document.getElementById('dp-text-toggle');
-    if(currentEditEl.contentEditable === "true") {
-      currentEditEl.contentEditable = "false";
-      btn.innerHTML = "📝 הפעל עריכת טקסט";
-      currentEditEl.style.outline = "";
+  function viewKnowledge(id) {
+    const k = knowledgeData.find(x => x.id === id);
+    if(k.type === 'test') {
+      startTest(k);
+    } else if(k.type === 'video') {
+      alert(`מנגן וידאו מתוך: ${k.content}\n(במערכת אמיתית יפתח נגן במסך מלא)`);
     } else {
-      currentEditEl.contentEditable = "true";
-      currentEditEl.focus();
-      btn.innerHTML = "🔒 נעל עריכת טקסט";
-      currentEditEl.style.outline = "2px solid blue";
+      alert(`תוכן: ${k.content}`);
     }
   }
 
-  function saveDesignLocally() {
-    const designs = {};
-    document.querySelectorAll('.editable-parent').forEach(el => {
-      if(el.style.cssText) {
-        designs[el.getAttribute('data-edit-id')] = el.style.cssText;
-      }
-      // שמירת טקסט שונה (פשוט במקרה שלנו)
-      designs[el.getAttribute('data-edit-id') + '_html'] = el.innerHTML;
+  // --- Tasks ---
+  function openTaskModal() {
+    document.getElementById('task-title').value = '';
+    currentChecklist = [];
+    document.getElementById('cl-preview').innerHTML = '';
+    
+    // אכלוס רשימת מבחנים
+    const testSelect = document.getElementById('task-test-select');
+    testSelect.innerHTML = knowledgeData.filter(k => k.type === 'test').map(k => `<option value="${k.id}">${k.title}</option>`).join('');
+
+    toggleTaskTypeOptions();
+    document.getElementById('task-modal').classList.remove('hidden');
+  }
+
+  function toggleTaskTypeOptions() {
+    const type = document.getElementById('task-type').value;
+    document.getElementById('task-checklist-container').classList.toggle('hidden', type !== 'checklist');
+    document.getElementById('task-test-container').classList.toggle('hidden', type !== 'test');
+  }
+
+  function addChecklistItem() {
+    const val = document.getElementById('new-cl-item').value.trim();
+    if(val) {
+      currentChecklist.push({ text: val, done: false });
+      document.getElementById('new-cl-item').value = '';
+      document.getElementById('cl-preview').innerHTML = currentChecklist.map(c => `<li>${c.text}</li>`).join('');
+    }
+  }
+
+  function saveTask() {
+    const title = document.getElementById('task-title').value;
+    const type = document.getElementById('task-type').value;
+    if(!title) return alert("חובה להזין כותרת");
+    
+    let taskObj = { id: Date.now(), title, type, status: 'open' };
+    if(type === 'checklist') taskObj.checklist = currentChecklist;
+    if(type === 'test') taskObj.testId = document.getElementById('task-test-select').value;
+    
+    tasksData.push(taskObj);
+    closeModal('task-modal');
+    renderTasks();
+  }
+
+  function renderTasks() {
+    const cont = document.getElementById('tasks-container');
+    if(tasksData.length === 0) { cont.innerHTML = "אין משימות."; return; }
+    
+    cont.innerHTML = tasksData.map(t => {
+      let action = `<button class="btn-small" onclick="alert('בוצע!')">סמן כבוצע</button>`;
+      if(t.type === 'checklist') action = `<button class="btn-small" onclick="alert('פותח צקליסט: ${t.checklist.length} סעיפים')">פתח טופס</button>`;
+      if(t.type === 'test') action = `<button class="btn-primary" onclick="viewKnowledge(${t.testId})">התחל מבחן</button>`;
+      
+      return `<div class="list-item">
+        <div><strong>${t.title}</strong><br><span style="font-size:0.8rem; color:gray;">סוג: ${t.type}</span></div>
+        <div>${action}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // --- User Tree ---
+  function renderUsers() {
+    const cont = document.getElementById('tree-container');
+    cont.innerHTML = '';
+    const rootNodes = usersData.filter(u => currentUser.role === 'admin' ? u.managerId === null : u.managerId === currentUser.id);
+    
+    const ul = document.createElement('ul');
+    ul.style.listStyleType = "none"; ul.style.padding = 0;
+    rootNodes.forEach(node => ul.appendChild(createTreeNode(node)));
+    cont.appendChild(ul);
+  }
+
+  function createTreeNode(user) {
+    const li = document.createElement('li');
+    const hasChildren = usersData.some(u => u.managerId === user.id);
+    li.innerHTML = `<div class="list-item" style="margin-bottom: 5px;"><span>${hasChildren ? '▼' : '👤'} ${user.fullName} (${user.role})</span></div>`;
+    if (hasChildren) {
+      const childrenUl = document.createElement('ul');
+      childrenUl.style.listStyleType = "none"; childrenUl.style.paddingRight = "20px"; childrenUl.style.borderRight = "1px dashed #ccc";
+      usersData.filter(u => u.managerId === user.id).forEach(child => childrenUl.appendChild(createTreeNode(child)));
+      li.appendChild(childrenUl);
+    }
+    return li;
+  }
+
+  // --- Active Test & Anti-Cheat Logic ---
+  let activeTestData = null;
+  let activeTestAnswers = [];
+
+  function startTest(testObj) {
+    activeTestData = testObj;
+    activeTestAnswers = [];
+    isTakingTest = true;
+    
+    document.getElementById('active-test-title').innerText = testObj.title;
+    const qCont = document.getElementById('active-test-questions');
+    
+    qCont.innerHTML = testObj.quiz.map((q, qIndex) => `
+      <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 8px;">
+        <h3 style="margin-top:0;">${qIndex+1}. ${q.q}</h3>
+        ${q.options.map((opt, oIndex) => `
+          <label style="display:block; padding:8px; background:#f9f9f9; margin-bottom:5px; border-radius:4px; cursor:pointer;">
+            <input type="radio" name="q_${qIndex}" value="${oIndex}"> ${opt}
+          </label>
+        `).join('')}
+      </div>
+    `).join('');
+
+    document.getElementById('active-test-overlay').classList.remove('hidden');
+    
+    // טיימר 60 דקות
+    let time = 60 * 60; 
+    activeTestInterval = setInterval(() => {
+      time--;
+      let m = Math.floor(time / 60); let s = time % 60;
+      document.getElementById('test-timer').innerText = `${m}:${s < 10 ? '0':''}${s}`;
+      if(time <= 0) submitActiveTest();
+    }, 1000);
+  }
+
+  function submitActiveTest() {
+    clearInterval(activeTestInterval);
+    isTakingTest = false;
+    
+    let correctCount = 0;
+    activeTestData.quiz.forEach((q, qIndex) => {
+      const selected = document.querySelector(`input[name="q_${qIndex}"]:checked`);
+      const selectedVal = selected ? parseInt(selected.value) : -1;
+      if(selectedVal === q.correct) correctCount++;
     });
-    localStorage.setItem('bana_designs', JSON.stringify(designs));
-    alert('העיצוב נשמר מקומית בדפדפן!');
+
+    const score = Math.round((correctCount / activeTestData.quiz.length) * 100);
+    
+    testLogsData.push({
+      empId: currentUser.id,
+      testId: activeTestData.id,
+      score: score,
+      completedAt: Date.now()
+    });
+
+    document.getElementById('active-test-overlay').classList.add('hidden');
+    alert(`המבחן הוגש בהצלחה. הציון שלך: ${score}`);
   }
 
-  function loadDesignLocally() {
-    const saved = localStorage.getItem('bana_designs');
-    if(saved) {
-      const designs = JSON.parse(saved);
-      document.querySelectorAll('.editable-parent').forEach(el => {
-        const id = el.getAttribute('data-edit-id');
-        if(designs[id]) el.style.cssText = designs[id];
-        // השבתת דריסת HTML מחשש להריסת כפתורי JS, כרגע נשמור רק עיצוב בטעינה מחדש
-      });
+  // מנגנון זיהוי יציאה מהמסך
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden && isTakingTest) {
+      clearInterval(activeTestInterval);
+      isTakingTest = false;
+      document.getElementById('active-test-overlay').classList.add('hidden');
+      document.getElementById('anti-cheat-warning').classList.remove('hidden');
+      // במערכת אמיתית: רישום במסד הנתונים שהמבחן נפסל
+    }
+  });
+
+  // --- Test Review (מנהלים) ---
+  function renderTestReview(type) {
+    const cont = document.getElementById('test-review-container');
+    if(type === 'edit') {
+      cont.innerHTML = "<p>כאן מנהל אזור יכול לערוך שאלות של מבחנים (כמו שעשינו בשלבים קודמים).</p>";
+    } else {
+      if(testLogsData.length === 0) { cont.innerHTML = "אין עדיין מבחנים שבוצעו."; return; }
+      
+      cont.innerHTML = testLogsData.map(log => {
+        const emp = usersData.find(u => u.id === log.empId);
+        const test = knowledgeData.find(k => k.id === log.testId);
+        const timePassedMin = (Date.now() - log.completedAt) / (1000 * 60);
+        
+        let details = "";
+        if(timePassedMin <= 15) {
+          details = `<button class="btn-small" style="background:var(--brand-red);" onclick="alert('פותח תשובות מלאות לסקירה...')">סקור תשובות עם עובד (פתוח ל-15 דק')</button>`;
+        } else {
+          details = `<span style="color:gray;">זמן הסקירה עבר. מוצג ציון בלבד.</span>`;
+        }
+
+        return `<div class="list-item">
+          <div><strong>עובד: ${emp.fullName}</strong> | מבחן: ${test.title}<br>ציון: ${log.score}</div>
+          <div>${details}</div>
+        </div>`;
+      }).join('');
     }
   }
-
-  // שמירה על כל הפונקציות הקודמות (הוסרה כפילות קוד לנוחות קריאה, הכל פועל כרגיל)
-  // ... פונקציות Excel, משתמשים, משימות, ידע ...
 
 </script>
 </body>
